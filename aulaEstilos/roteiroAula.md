@@ -30,6 +30,13 @@ Aqui está o conteúdo completo para o seu e-book, estruturado de forma didátic
 > ```
 ---
 
+## 📑 Comandos para executar o proejto
+
+> ```bash
+> npx expo start --tunnel
+> ```
+---
+
 ## 1. Introdução
 
 Seja bem-vindo ao guia definitivo de estilização no **React Native**. Se você vem do desenvolvimento Web, vai se sentir em casa, mas com algumas adaptações importantes. No React Native, não usamos arquivos `.css`. Em vez disso, utilizamos objetos JavaScript para definir como nossa interface deve se parecer.
