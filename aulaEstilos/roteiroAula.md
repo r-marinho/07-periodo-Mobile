@@ -23,14 +23,14 @@ Aqui está o conteúdo completo para o seu e-book, estruturado de forma didátic
 7. [Conclusão](#conclusão)
 
 ---
-## 📑 Comandos de criação dos projetos
+## 📑 Comando de criação dos projetos
 
 > ```bash
 > npx create-expo-app ex01 --template blank
 > ```
 ---
 
-## 📑 Comandos para executar o proejto
+## 📑 Comando para executar o proejto
 
 > ```bash
 > npx expo start --tunnel
