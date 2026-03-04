@@ -5,7 +5,10 @@
 Este material foi elaborado por um professor experiente em desenvolvimento mobile e produção de conteúdo. Contém explicações, boas práticas e quatro exemplos práticos que podem ser executados com Expo. Os exemplos foram pensados para rodar com o comando
 
 ```
-npx create-expo-app meuApp --template blank --sdk-version 54
+sudo apt update
+sudo apt install -y nodejs npm
+npm install --global expo-cli
+npx create-expo-app MeuApp --template blank@sdk-54
 npx expo start --tunnel
 ```
 
