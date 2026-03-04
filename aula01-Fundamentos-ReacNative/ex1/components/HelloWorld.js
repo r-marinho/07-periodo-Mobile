@@ -11,16 +11,10 @@ export default function Componente(){
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 0.2,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#016a97'
-    },
     text: {
         fontSize: 20,
         textAlign: 'center',
-        color: '#fff',
+        color: '#7e0000',
         margin: 10
     }
 });

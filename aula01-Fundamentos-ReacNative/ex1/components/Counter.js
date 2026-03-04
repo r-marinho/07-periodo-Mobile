@@ -13,11 +13,6 @@ export default function Counter(){
 }
 
 const styles = StyleSheet.create({
-    container:{
-        flex: 0.3,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
     counter: {
         fontSize: 20,
         marginBottom: 20
