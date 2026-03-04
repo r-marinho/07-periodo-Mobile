@@ -472,53 +472,65 @@ A estruturação dos componentes em arquivos separados é um ótimo primeiro pas
 
 Abaixo está um exemplo de `App.js` que recebe os três componentes (`HelloWorld`, `Greeting` e `Counter`) e gerencia a distribuição do espaço usando `SafeAreaView` e `justifyContent`.
 
+O SafeAreaView da API core do React Native tem limitações em algumas versões, e a solução mais recomendada é usar a implementação do pacote react-native-safe-area-context. Abaixo segue dois trechos de códigos, o primeiro usa react-native-safe-area-context, que é a solução mais adequada. O segundo é uma alternativa sem dependência externa, usando StatusBar e Platform, caso prefira não instalar nada.
+Na primeira opção é recomendado o uso do react-native-safe-area-context. Por isso, instale a dependência no seu projeto com o comando:
+```bash
+npm install react-native-safe-area-context
+```
+
 ```javascript
-import { StyleSheet, View, SafeAreaView } from 'react-native';
-import HelloWorld from './components/HelloWorld';
-import Greeting from './components/Greeting';
-import Counter from './components/Counter';
+import React from 'react'
+import { StyleSheet, View } from 'react-native'
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
+import HelloWorld from './components/HelloWorld'
+import Greeting from './components/Greeting'
+import Counter from './components/Counter'
 
 export default function App() {
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <View style={styles.headerSection}>
-          <HelloWorld />
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <View style={styles.headerSection}>
+            <HelloWorld />
+          </View>
+
+          <View style={styles.middleSection}>
+            <Greeting name="Gabriel" />
+            <Greeting name="Miguel" />
+            <Greeting name="Rafael" />
+          </View>
+
+          <View style={styles.bottomSection}>
+            <Counter />
+          </View>
         </View>
-        <View style={styles.middleSection}>
-          <Greeting name="Gabriel" />
-          <Greeting name="Miguel" />
-          <Greeting name="Rafael" />
-        </View>
-        <View style={styles.bottomSection}>
-          <Counter />
-        </View>
-      </View>
-    </SafeAreaView>
-  );
+      </SafeAreaView>
+    </SafeAreaProvider>
+  )
 }
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#fff'
   },
   container: {
     flex: 1,
     justifyContent: 'space-evenly',
     alignItems: 'center',
-    paddingVertical: 20,
+    paddingVertical: 20
   },
   headerSection: {
-    width: '100%',
+    width: '100%'
   },
   middleSection: {
-    alignItems: 'center',
+    alignItems: 'center'
   },
   bottomSection: {
-    alignItems: 'center',
+    alignItems: 'center'
   }
-});
+})
 ```
 
 ## Refatoração dos componentes filhos (resumo)
@@ -526,6 +538,71 @@ const styles = StyleSheet.create({
 - `HelloWorld`: remover `flex` rígido e usar `padding` e `width: '100%'` para permitir que o componente se ajuste ao conteúdo e ao layout do pai.
 - `Greeting`: aplicar os estilos corretamente no `Text` e manter o componente focado apenas na apresentação do nome.
 - `Counter`: remover `flex` rígido e usar `padding` para estrutura interna.
+
+Segunda Opção:
+
+Explicação curta. `SafeAreaProvider` fornece o contexto necessário para que `SafeAreaView` funcione corretamente em todas as plataformas. Esta abordagem trata corretamente as áreas seguras em iOS com notch, em Android com barras e também em telas com recorte.
+
+---
+
+## Opção alternativa — sem dependências externas
+
+Se não quiser instalar nada, use `StatusBar` e `Platform` para respeitar a área superior em Android e iOS. Esta solução é menos robusta que a anterior, mas funciona na maioria dos casos.
+
+
+```javascript
+import React from 'react'
+import { StyleSheet, View, StatusBar, Platform } from 'react-native'
+import HelloWorld from './components/HelloWorld'
+import Greeting from './components/Greeting'
+import Counter from './components/Counter'
+
+const STATUS_BAR_HEIGHT = Platform.OS === 'android' ? StatusBar.currentHeight || 0 : 0
+
+export default function App() {
+  return (
+    <View style={[styles.safeArea, { paddingTop: STATUS_BAR_HEIGHT }]}>
+      <View style={styles.container}>
+        <View style={styles.headerSection}>
+          <HelloWorld />
+        </View>
+
+        <View style={styles.middleSection}>
+          <Greeting name="Gabriel" />
+          <Greeting name="Miguel" />
+          <Greeting name="Rafael" />
+        </View>
+
+        <View style={styles.bottomSection}>
+          <Counter />
+        </View>
+      </View>
+    </View>
+  )
+}
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#fff'
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    paddingVertical: 20
+  },
+  headerSection: {
+    width: '100%'
+  },
+  middleSection: {
+    alignItems: 'center'
+  },
+  bottomSection: {
+    alignItems: 'center'
+  }
+})
+```
 
 # 9. Dicas, armadilhas comuns e próximos passos
 
