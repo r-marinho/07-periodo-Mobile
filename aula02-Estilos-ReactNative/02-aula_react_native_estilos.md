@@ -2,7 +2,7 @@
 
 Material completo sobre conceitos, padrões e boas práticas para trabalhar com estilos no React Native. Este material foi pensado para ser usado em sala de aula ou estudo individual. Ele contém explicações, exemplos do básico ao avançado e orientações sobre desempenho e acessibilidade.
 
-> Observação: exemplos de código usam Expo e podem ser executados com `npx create-expo-app MeuApp --template blank` e `npx expo start --tunnel`.
+> Observação: exemplos de código usam Expo e podem ser executados com `npx create-expo-app MeuApp --template blank@sdk-54` e `npx expo start --tunnel`.
 
 ---
 

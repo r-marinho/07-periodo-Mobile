@@ -5,10 +5,7 @@
 Este material foi elaborado por um professor experiente em desenvolvimento mobile e produção de conteúdo. Contém explicações, boas práticas e três exemplos práticos que podem ser executados com Expo. Os exemplos foram pensados para rodar com o comando
 
 ```
-sudo apt update
-sudo apt install -y nodejs npm
-npm install --global expo-cli
-npx create-expo-app MeuApp --template blank@sdk-54
+npx create-expo-app meuApp --template blank --sdk-version 54
 npx expo start --tunnel
 ```
 
@@ -255,9 +252,9 @@ import Greeting from './components/Greeting'
 export default function App() {
   return (
     <View style={styles.container}>
-      <Greeting name="Gabriel" />
-      <Greeting name="Miguel" />
-      <Greeting name="Rafael" />
+      <Greeting name="Maria" />
+      <Greeting name="João" />
+      <Greeting name="Ana" />
     </View>
   )
 }
@@ -351,3 +348,190 @@ npx expo start --tunnel
 
 Obrigado por ler este material. Bons estudos e bom desenvolvimento mobile
 
+
+## Exemplo 4 – TextInput, props e useState
+
+Neste exemplo adicionamos um fluxo completo que integra um campo de entrada de texto, o gerenciamento de estado com o hook `useState` e a passagem de dados via props para um componente de apresentação chamado `Mensagem`. Além disso usamos `Alert` para demonstrar como exibir uma caixa de diálogo com a mensagem enviada.
+
+A ideia principal deste exemplo e mostrar como componentes podem cooperar. Um componente pai controla o estado e repassa dados para um componente filho via props. O componente filho e responsável por apresentar os dados e executar uma acao extra, neste caso a exibicao de um alerta.
+
+### Estrutura de arquivos
+
+```
+/MeuApp
+ ├ App.js
+ └ components
+      ├ Mensagem.js
+      └ MessageInput.js
+```
+
+### components/Mensagem.js
+
+```jsx
+// components/Mensagem.js
+import React from 'react'
+import { View, Text, Button, Alert, StyleSheet } from 'react-native'
+
+export default function Mensagem({ texto, onClear }) {
+  const mostrarAlerta = () => {
+    Alert.alert('Mensagem', texto || 'Nenhuma mensagem')
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>{texto || 'Nenhuma mensagem'}</Text>
+      <Button title="Mostrar (alert)" onPress={mostrarAlerta} />
+      <Button title="Limpar" onPress={onClear} />
+    </View>
+  )
+}
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    margin: 10
+  },
+  text: {
+    fontSize: 18,
+    marginBottom: 8
+  }
+})
+```
+
+### components/MessageInput.js
+
+```jsx
+// components/MessageInput.js
+import React, { useState } from 'react'
+import { View, TextInput, Button, StyleSheet } from 'react-native'
+import Mensagem from './Mensagem'
+
+export default function MessageInput() {
+  const [texto, setTexto] = useState('')
+  const [exibir, setExibir] = useState('')
+
+  const enviar = () => {
+    // Podemos limpar espaços extras e validar antes de enviar
+    const trimmed = texto.trim()
+    setExibir(trimmed)
+  }
+
+  const limpar = () => {
+    setTexto('')
+    setExibir('')
+  }
+
+  return (
+    <View style={styles.container}>
+      <TextInput
+        style={styles.input}
+        placeholder="Digite sua mensagem"
+        value={texto}
+        onChangeText={setTexto}
+        returnKeyType="done"
+        accessible={true}
+        accessibilityLabel="Campo de texto para mensagem"
+      />
+      <Button title="Enviar" onPress={enviar} />
+      <Mensagem texto={exibir} onClear={limpar} />
+    </View>
+  )
+}
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+    alignItems: 'stretch'
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    borderRadius: 6,
+    marginBottom: 8
+  }
+})
+```
+
+### App.js
+
+```jsx
+import React from 'react'
+import MessageInput from './components/MessageInput'
+
+export default function App() {
+  return <MessageInput />
+}
+```
+
+### Explicacao detalhada do codigo
+
+1. Controle do estado no componente pai
+
+O componente `MessageInput` declara duas variaveis de estado com `useState`. A primeira, `texto`, e ligada ao `TextInput` e representa o valor que o usuario esta digitando. Este e um padrao conhecido como componente controlado, porque o valor exibido no campo e controlado pelo estado do componente.
+
+A segunda variavel, `exibir`, armazena a mensagem que sera efetivamente enviada para apresentacao. Isto permite separar o que o usuario digita do que esta publicado, o que e util para casos de validacao ou processamentos intermediarios.
+
+2. Componente Mensagem e passagem de props
+
+`MessageInput` passa a prop `texto` para `Mensagem` e tambem passa `onClear` para que o componente filho possa solicitar que o pai limpe o estado. Esta e uma pratica recomendada para manter unidirecionalidade do fluxo de dados, onde dados sobem e descem pela arvore de componentes de forma previsivel.
+
+3. Uso do TextInput
+
+`TextInput` recebe `value` e `onChangeText` para funcionar como um componente controlado. Isto garante que o estado e a interface estejam sempre sincronizados. Adicionamos tambem `placeholder`, `returnKeyType` e atributos de acessibilidade para melhorar a experiencia do usuario e a compatibilidade com leitores de tela.
+
+4. Alert
+
+O componente `Mensagem` utiliza `Alert.alert` para exibir a mensagem em uma caixa de dialogo nativa. O uso do `Alert` e util para feedbacks rapidos, mas para fluxos mais complexos e recomendado construir componentes de modal customizados ou usar bibliotecas especificas.
+
+5. Boas praticas aplicadas no exemplo
+
+- Validacao minima: usamos `trim()` antes de publicar a mensagem para evitar enviar valores apenas com espacos
+- Separacao de responsabilidades: o componente de entrada cuida do estado e da logica de envio, enquanto o componente de apresentacao cuida da exibicao e da acao de mostrar alerta
+- Acessibilidade: adicionamos `accessibilityLabel` no TextInput para auxiliar leitores de tela
+- Evitar renderizacoes desnecessarias: neste exemplo simples nao ha necessidade de otimizar, mas em componentes maiores considere `React.memo` e `useCallback` para handlers
+- Nomeacao clara de props: `texto` e `onClear` sao nomes que descrevem bem a funcao de cada prop
+
+### Possiveis melhoramentos
+
+- Validacoes mais robustas: bloquear envio quando a mensagem estiver vazia ou muito longa
+- Tratamento do teclado: envolver o layout com `KeyboardAvoidingView` para evitar que o teclado sobreponha o campo de entrada em iOS
+- Localizacao: extrair strings literais para arquivos de traducao quando necessário
+- Testes: escrever testes de snapshot e testes de interacao para garantir que o fluxo continua funcionando
+
+## 8. Dicas, armadilhas comuns e proximos passos
+
+- Nao chame hooks condicionalmente, isso quebra o controle interno do React
+- Prefira componentes pequenos e testaveis
+- Evite repassar objetos literais em props sem memoizacao para nao causar renders desnecessarios
+- Para performance, aprenda sobre useMemo e useCallback
+- Considere adotar TypeScript para tipagem de props e do estado
+- Explore navegação com React Navigation, consumo de APIs com fetch ou axios, e gerenciamento global de estado com Context ou bibliotecas como Redux ou Zustand
+
+# 9. Como executar os exemplos
+
+1. Crie um projeto com o comando
+
+```
+npx create-expo-app meuApp --template blank --sdk-version 54
+```
+
+2. Copie a estrutura de pastas e arquivos descrita neste material
+3. Instale as dependencias se necessario
+4. Execute
+
+```
+npx expo start --tunnel
+```
+
+5. Abra o Expo Go no seu celular e escaneie o QR code
+
+# Referencias e leitura recomendada
+
+- Documentacao oficial do React Native
+- Tutorial do Expo
+- React documentation sobre hooks
+
+---
+
+Obrigado por ler este material. Se quiser, eu posso gerar o arquivo .md pronto para download ou exportar para outros formatos como PDF
