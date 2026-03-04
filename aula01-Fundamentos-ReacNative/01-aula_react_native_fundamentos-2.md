@@ -321,6 +321,182 @@ export default function App() {
 - Considere adotar TypeScript para tipagem de props e do estado
 - Explore navegação com React Navigation, consumo de APIs com fetch ou axios, e gerenciamento global de estado com Context ou bibliotecas como Redux ou Zustand
 
+
+```
+A estruturação acima está separada dividindo tudo em componentes! Esse é o primeiro e mais importante passo no React Native.
+
+No entanto, se formos unir os três componentes em um único app é fundamental usar o conceito de boas práticas de UI: **quem deve gerenciar o layout e o espaço (o `flex`) é o componente pai (neste caso, o `App`), e não os componentes filhos.**
+
+Quando é colocado `flex: 0.2` dentro do `HelloWorld` e `flex: 0.3` dentro do `Counter`, esses componentes ficam engessados. Se precisar usar o `Counter` em outra tela no futuro, ele sempre tentará forçar esse tamanho, o que quebra a reutilização.
+
+Aqui está a forma ideal de refatorar o código seguindo as boas práticas, passando o controle do Flexbox para o `App.js`.
+
+---
+
+### 1. Refatorando o `App.js` (O Gerenciador do Layout)
+
+Vamos usar uma `SafeAreaView` (para evitar que o conteúdo fique escondido atrás do relógio/bateria do celular) e vamos usar `justifyContent: 'space-between'` ou `gap` para distribuir os itens sem precisar engessar os filhos.
+
+```javascript
+import { StyleSheet, View, SafeAreaView } from 'react-native';
+import HelloWorld from './components/HelloWorld';
+import Greeting from './components/Greeting';
+import Counter from './components/Counter';
+
+export default function App() {
+  return (
+    // SafeAreaView garante que o app não invada a barra de status (notch)
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        
+        {/* Bloco Superior */}
+        <View style={styles.headerSection}>
+          <HelloWorld />
+        </View>
+
+        {/* Bloco Central (Nomes) */}
+        <View style={styles.middleSection}>
+          <Greeting name="Gabriel" />
+          <Greeting name="Miguel" />
+          <Greeting name="Rafael" />
+        </View>
+
+        {/* Bloco Inferior (Contador) */}
+        <View style={styles.bottomSection}>
+          <Counter />
+        </View>
+
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  container: {
+    flex: 1, // Ocupa toda a tela
+    justifyContent: 'space-evenly', // Distribui o espaço por igual entre os 3 blocos
+    alignItems: 'center', // Centraliza tudo horizontalmente
+    paddingVertical: 20,
+  },
+  headerSection: {
+    width: '100%', // Faz o fundo azul do HelloWorld esticar
+  },
+  middleSection: {
+    alignItems: 'center',
+  },
+  bottomSection: {
+    alignItems: 'center',
+  }
+});
+
+```
+
+---
+
+### 2. Refatorando os Componentes Filhos
+
+Agora vamos limpar os componentes para que eles apenas se preocupem com o próprio conteúdo e visual, removendo a responsabilidade de "empurrar" o layout da tela.
+
+**`components/HelloWorld.js` (que estava como `Componente`)**
+
+```javascript
+import { View, Text, StyleSheet } from "react-native";
+
+export default function HelloWorld() { // Nome corrigido para bater com o import
+    return (
+        <View style={styles.container}>
+            <Text style={styles.text}>
+                Exemplo de Componente
+            </Text>
+        </View>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        // Removido o flex: 0.2. Ele agora se adapta ao conteúdo.
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#016a97',
+        paddingVertical: 20, // Usamos padding para dar volume em vez de flex
+        width: '100%',
+    },
+    text: {
+        fontSize: 20,
+        textAlign: 'center',
+        color: '#fff',
+    }
+});
+
+```
+
+**`components/Greeting.js`**
+
+```javascript
+import { Text, StyleSheet } from "react-native";
+
+// Boas práticas: desestruturar a prop diretamente nos parâmetros
+export default function Greeting({ name }) {
+    // Correção: Faltava aplicar o style no Text
+    return <Text style={styles.greeting}>Olá, {name}!</Text>;
+}
+
+const styles = StyleSheet.create({
+    greeting: {
+        fontSize: 18,
+        marginVertical: 5, // Margem apenas em cima e embaixo
+        fontWeight: 'bold', // Um toque extra para destacar os nomes
+    }
+});
+
+```
+
+**`components/Counter.js`**
+
+```javascript
+import { useState } from "react";
+import { Button, Text, StyleSheet, View } from "react-native";
+
+export default function Counter() {
+    const [count, setCount] = useState(0);
+
+    return (
+        <View style={styles.container}>
+            <Text style={styles.counter}>Você clicou {count} vezes.</Text>
+            <Button title="Clique aqui" onPress={() => setCount(count + 1)} />
+        </View>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        // Removido o flex: 0.3. 
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    counter: {
+        fontSize: 20,
+        marginBottom: 15, // Aproximou um pouco o botão do texto
+    }
+});
+
+```
+
+### O que mudou e por que isso é melhor?
+
+1. **Inversão de Controle do Layout:** O `App.js` agora decide como o espaço é dividido usando o `justifyContent: 'space-evenly'`. Se você quiser que o contador fique colado no rodapé no futuro, basta mexer no `App.js`, e não dentro do código do `Counter`.
+2. **Correção do `Greeting`:** Aplicamos o estilo que você havia criado mas não estava sendo chamado no JSX.
+3. **Limpeza visual:** Trocamos o `flex` fracionado (0.2, 0.3) por `padding` dentro dos componentes. Isso faz com que os componentes tenham um tamanho real baseado no conteúdo deles, evitando que o layout quebre em telas muito pequenas ou muito grandes.
+
+Você gostaria que eu te explicasse como usar o `ScrollView` ou `FlatList` caso essa lista de nomes (`Greeting`) cresça muito e precise de rolagem na tela?
+
+
+
 # 9. Como executar os exemplos
 
 1. Crie um projeto com o comando

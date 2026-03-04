@@ -1,10 +1,16 @@
 import { StyleSheet, Text, View } from 'react-native';
-import Componente from './components/Componente';
+import HelloWorld from './components/HelloWorld';
+import Greeting from './components/Greeting';
+import Counter from './components/Counter';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Componente />
+      <HelloWorld />
+      <Greeting name="Gabriel" />
+      <Greeting name="Miguel" />
+      <Greeting name="Rafael" />
+      <Counter />
     </View>
   );
 }
@@ -13,7 +19,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
   },
 });
