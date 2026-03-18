@@ -1,6 +1,6 @@
 # Estilos no React Native
 
-Material completo sobre conceitos, padrões e boas práticas para trabalhar com estilos no React Native. Este material foi pensado para ser usado em sala de aula ou estudo individual. Ele contém explicações, exemplos do básico ao avançado e orientações sobre desempenho e acessibilidade.
+Material sobre conceitos, padrões e boas práticas para trabalhar com estilos no React Native.
 
 > Observação: exemplos de código usam Expo e podem ser executados com `npx create-expo-app MeuApp --template blank@sdk-54` e `npx expo start --tunnel`.
 
@@ -428,11 +428,6 @@ import theme from './theme';
 * Reduza a complexidade de hierarquia de Views quando possível.
 * Evite recalcular dimensões complexas no render, prefira hooks e efeitos.
 
-Checklist rápido
-
-* Estilos estáticos em `StyleSheet.create`.
-* Estilos dinâmicos compostos via array.
-* Evitar inline em listas grandes.
 
 ---
 
@@ -479,28 +474,4 @@ MeuApp/
 ```
 
 ---
-
-## Perguntas frequentes rápidas
-
-**Posso usar porcentagens diretamente em width e height**
-
-Sim, mas elas são tratadas como strings, por exemplo `width: '50%'`.
-
-**Devo usar rem ou em**
-
-Não. Use números para representar DIP no React Native.
-
-**Como tratar fontes customizadas**
-
-No Expo use `expo-font` para carregar fontes e registre com `Font.loadAsync` antes de renderizar a interface.
-
----
-
-## Conclusão
-
-Este material traz uma visão prática e resumos das principais técnicas para dominar estilos no React Native. Use os exemplos como ponto de partida e amplie com temas, componentes e testes de usabilidade.
-
----
-
-FIM
 
