@@ -1,7 +1,5 @@
-Olá, futuro mestre do React Native! Prepare o seu ambiente, pois hoje não vamos apenas escrever código; vamos construir uma arquitetura de software mobile. Como seu instrutor, guiarei você por um roteiro evolutivo. Começaremos com o conceito isolado e, conforme a complexidade aumentar, utilizaremos a navegação para organizar nossa interface.
-
-Este é o seu roteiro de aula, dividido em quatro grandes atos.
-
+Este é o seu roteiro de aula, dividido em atos.
+Começaremos com o conceito isolado e, conforme a complexidade aumentar, utilizaremos a navegação para organizar nossa interface.
 ---
 
 ### Ato 1: A Gênese – Criando o Componente Atômico
@@ -98,7 +96,7 @@ const CustomModalScreen = ({ animation, themeColor }) => {
   );
 };
 
-// Estilos detalhados para garantir uma interface moderna e limpa
+// Estilos detalhados para garantir uma interface limpa
 const styles = StyleSheet.create({
   // Container principal da tela que recebe o componente
   screenContainer: { 
@@ -191,7 +189,7 @@ const styles = StyleSheet.create({
 export default CustomModalScreen;
 ```
 
-**Explicação do Professor:** Observe que o `animationType={animation}` é o que dita a regra de ouro. Ao passar `slide`, o React Native entende que deve mover o componente do eixo inferior para o centro. Note o uso de `onPressOut` no `TouchableOpacity` externo; isso garante que, se o usuário tocar na área escura, o modal será destruído visualmente através do `setVisible(false)`.
+**Observe que o `animationType={animation}` é o que dita a regra principal. Ao passar `slide`, o React Native entende que deve mover o componente do eixo inferior para o centro. Note o uso de `onPressOut` no `TouchableOpacity` externo; isso garante que, se o usuário tocar na área escura, o modal será destruído visualmente através do `setVisible(false)`.** 
 
 ---
 
@@ -216,7 +214,7 @@ export default function App() {
 }
 ```
 
-**O Problema Didático:** "Alunos, agora imaginem que precisamos testar o tipo **Fade**. Se eu colocar outro botão abaixo do primeiro no mesmo `App.js`, nossa tela começará a ficar poluída. Teríamos vários estados `visible` no mesmo arquivo, o que geraria confusão de código (o famoso 'Código Espaguete'). No mundo real, diferentes tipos de modais pertencem a diferentes contextos ou telas."
+**Agora, imaginem que precisamos testar o tipo **Fade**. Se eu colocar outro botão abaixo do primeiro no mesmo `App.js`, nossa tela começará a ficar poluída. Teríamos vários estados `visible` no mesmo arquivo, o que geraria confusão de código (o famoso 'Código Espaguete'). No mundo real, diferentes tipos de modais pertencem a diferentes contextos ou telas."**
 
 Para resolver isso e apresentar as três animações de forma organizada, vamos implementar a **Navegação por Abas (Bottom Tabs)**.
 
@@ -281,7 +279,7 @@ export default function App() {
 
 ### Ato 4: Conclusão e Análise das Características
 
-Agora que o projeto está rodando com `npx expo start --tunnel`, vamos analisar o que construímos nesta aula:
+Agora execute no terminal `npx expo start --tunnel` para rodar o projeto
 
 1.  **Modularização:** Ao mover o Modal para `CustomModalScreen.js`, isolamos a lógica. Se precisarmos mudar o estilo do botão de fechar, mudamos em um único lugar e todas as três abas serão atualizadas.
 2.  **O Tipo Slide (Aba 1):** Note como ele sobe do chão da tela. É ideal para formulários ou seleções de fotos, onde o usuário sente que está "puxando" uma nova tarefa para cima da atual.
@@ -289,6 +287,6 @@ Agora que o projeto está rodando com `npx expo start --tunnel`, vamos analisar 
 4.  **O Tipo None (Aba 3):** Esta é a transição bruta. Use-a quando a performance for o único objetivo ou quando o modal for tão pequeno que uma animação distrairia o usuário.
 5.  **Gerenciamento de Estado:** Cada aba mantém seu próprio estado `visible`. Ao alternar entre as abas, o React monta e desmonta os componentes, garantindo que um modal aberto na aba "Slide" não interfira na visualização da aba "Fade".
 
-**Dica do Professor:** No mercado de trabalho, evite modais que ocupam 100% da largura da tela. Use sempre a técnica do **80% de largura** com o fundo escurecido que implementamos no estilo `modalCard`. Isso mantém o usuário situado no aplicativo, reduzindo a ansiedade e melhorando a usabilidade.
+**Dica:** evite modais que ocupam 100% da largura da tela. Use sempre a técnica do **80% de largura** com o fundo escurecido que implementamos no estilo `modalCard`. Isso mantém o usuário situado no aplicativo, reduzindo a ansiedade e melhorando a usabilidade.
 
-Pronto para testar? Execute o comando no terminal e sinta a diferença entre as três físicas de movimento!
+Pronto para testar? Execute o comando no terminal e sinta a diferença entre os três tipos de movimento!
