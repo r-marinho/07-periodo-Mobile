@@ -1,20 +1,40 @@
-# Guia para sistemas multiagente, versão reestruturada
+# Guia para estruturar instruções de uma IA multiagente
 
-Este documento é a evolução do material original. Ele corrige as lacunas identificadas na análise anterior e transforma o que era um guia de documentação em um framework operacional para sistemas com múltiplos agentes coordenados.
+## 1. Descrição do material
 
-## 1. O que mudou em relação ao modelo anterior
+Para que a IA multiagente funcione bem, o processo deve ser incremental, com documentos curtos, objetivos e com um propósito claro para cada fase.
 
-O modelo original descrevia oito arquivos de documentação, mas não definia agentes, papéis, comunicação entre agentes, protocolo de divergência ou critérios de encerramento. Esta versão acrescenta cinco peças que faltavam.
+Os principais pontos usados neste material.
 
-1. Um arquivo meta de orientação para os próprios agentes.
-2. Definição explícita de papéis e fronteiras de cada agente.
-3. Protocolo de divergência para quando agentes discordarem entre si ou do contrato.
-4. Glossário de domínio compartilhado entre todos os agentes.
-5. Log de evolução enriquecido com rastreabilidade de agente, prompt e validação humana.
+1. O uso de Markdown é uma boa escolha, porque organiza o contexto de forma limpa, legível e fácil de manter.
+2. A separação por etapas é essencial, porque reduz erros, evita contradições e ajuda os agentes a manterem foco.
+3. A definição de contratos de API antes da implementação é uma prática correta, porque reduz retrabalho entre front-end e back-end.
+4. A inclusão de testes em cada etapa é obrigatória, porque transforma o projeto em um fluxo verificável e não apenas em geração de código.
+5. O registro de evolução do projeto em um arquivo próprio é uma excelente prática, porque facilita retomada, auditoria e continuidade.
+6. O material deve evitar excesso de explicação genérica e repetitiva.
+7. Cada arquivo precisa ter responsabilidade única.
+8. O processo deve deixar explícito o que a IA deve fazer, o que o humano deve validar, e quando avançar para a próxima etapa.
+9. Os testes devem aparecer desde a etapa de arquitetura, e não apenas depois.
+10. O fluxo ideal é começar com visão geral, seguir para requisitos e contratos, depois modelagem técnica, implementação por módulos, testes e, por fim, registro de evolução.
 
-## 2. Estrutura final de arquivos
+## 2. Estratégia recomendada para trabalhar com IA multiagente
 
-A nova estrutura tem dez arquivos. A numeração começa em zero porque o arquivo `00` é meta, lido por todos os agentes antes de qualquer outro.
+A melhor forma de conduzir esse tipo de projeto é usar um conjunto de arquivos Markdown bem divididos. Cada arquivo deve servir como uma camada do projeto.
+
+A lógica é esta.
+
+1. Primeiro, você define o problema, o escopo, os atores e as restrições.
+2. Depois, você pede à IA que proponha arquitetura, estrutura técnica e padrões.
+3. Em seguida, você define contratos entre os módulos.
+4. Só então você pede geração de código por partes.
+5. Cada parte deve vir acompanhada de testes, critérios de aceite e validação manual.
+6. A cada aprovação, você registra o resultado no log de evolução.
+
+Esse método é melhor do que entregar tudo de uma vez, porque reduz ambiguidades, permite correções rápidas e evita que a IA tente resolver todo o sistema sem contexto suficiente.
+
+## 3. Estrutura de arquivos
+
+Essa estrutura possui dez arquivos. A numeração começa em zero porque o arquivo `00` é meta, lido por todos os agentes antes de qualquer outro.
 
 1. `00_orientacao_agentes.md`, regras gerais do sistema multiagente.
 2. `01_visao_geral.md`, contexto e escopo do projeto.
@@ -27,11 +47,11 @@ A nova estrutura tem dez arquivos. A numeração começa em zero porque o arquiv
 9. `08_log_de_evolucao.md`, histórico do projeto com rastreabilidade.
 10. `09_glossario_dominio.md`, dicionário de termos compartilhado.
 
-## 3. Definição dos agentes
+## 4. Definição dos agentes
 
 O sistema opera com seis agentes especializados. Cada agente tem papel, arquivos de leitura, arquivos de escrita e fronteiras explícitas.
 
-### 3.1 Agente Arquiteto
+### 4.1 Agente Arquiteto
 
 Define estrutura. Não implementa código.
 
@@ -41,7 +61,7 @@ Escreve: `01`, `02`, `03`, `09`.
 
 Fronteira: pode escrever scripts SQL de modelagem, mas não código de aplicação.
 
-### 3.2 Agente Designer de API
+### 4.2 Agente Designer de API
 
 Traduz requisitos e modelagem em contratos REST inequívocos.
 
@@ -51,7 +71,7 @@ Escreve: `04`, `09` quando descobrir termo novo.
 
 Fronteira: não decide arquitetura, não implementa.
 
-### 3.3 Agente Back-end
+### 4.3 Agente Back-end
 
 Implementa exatamente o que está no contrato.
 
@@ -61,7 +81,7 @@ Escreve: código-fonte do módulo, testes, atualização do `08`.
 
 Fronteira: não altera contratos. Em caso de ambiguidade, abre item de divergência.
 
-### 3.4 Agente Front-end e Mobile
+### 4.4 Agente Front-end e Mobile
 
 Espelho do Back-end, voltado para a interface.
 
@@ -71,7 +91,7 @@ Escreve: código de interface, testes, atualização do `08`.
 
 Fronteira: consome o contrato como verdade. Não altera contratos.
 
-### 3.5 Agente de QA
+### 4.5 Agente de QA
 
 Garante qualidade. Não pode ser o mesmo agente que escreveu o código que ele testa.
 
@@ -81,7 +101,7 @@ Escreve: `07`, atualiza `08` com resultados.
 
 Fronteira: não corrige código. Quando encontra falha, registra e devolve para o agente responsável.
 
-### 3.6 Agente Documentador
+### 4.6 Agente Documentador
 
 Mantém a memória do projeto.
 
@@ -91,7 +111,7 @@ Escreve: `08`, mantém `09` consistente.
 
 Fronteira: não toma decisões técnicas. Apenas consolida.
 
-## 4. Fluxo de inicialização e ativação dos agentes
+## 5. Fluxo de inicialização e ativação dos agentes
 
 A ordem de ativação importa. Um agente só entra em ação quando o artefato anterior foi validado por humano.
 
@@ -106,12 +126,12 @@ A ordem de ativação importa. Um agente só entra em ação quando o artefato a
 9. Agente Documentador atualiza `08` ao final de cada ciclo.
 10. Humano valida ciclo. Próximo módulo.
 
-## 5. Protocolo de divergência
+## 6. Protocolo de divergência
 
 Quando um agente identifica conflito, ambiguidade ou erro em artefato anterior, ele segue este protocolo. Nunca improvisa.
 
 1. Para imediatamente a tarefa em andamento.
-2. Registra um bloco de divergência no `08`, no formato definido na seção 7.7.
+2. Registra um bloco de divergência no `08`, no formato definido na seção 9.9.
 3. Marca o trecho problemático no arquivo de origem com a tag `[QUESTIONAMENTO]`.
 4. Notifica o humano coordenador.
 5. Aguarda decisão antes de prosseguir.
@@ -123,17 +143,17 @@ Tipos de divergência possíveis.
 3. `[CONFLITO]`, contradição entre dois artefatos aprovados.
 4. `[BLOQUEIO]`, impossibilidade técnica de cumprir o pedido.
 
-## 6. Critérios de encerramento
+## 7. Critérios de encerramento
 
-O modelo original não dizia quando parar. Esta versão define três níveis de encerramento.
+Definição dos três níveis de encerramento.
 
 1. Módulo fechado, quando passou em todos os testes do `07`, foi validado por humano e está registrado como concluído no `08`. Após esse ponto, o módulo só é tocado por correção de bug, nunca por melhoria espontânea da IA.
-2. Versão fechada, quando todos os módulos do escopo da versão estão fechados, e o `08` registra o tag de versão.
+2. Versão fechada, quando todos os módulos do escopo da versão estão fechados, e o `08` registra a tag de versão.
 3. Projeto fechado, quando o escopo definido em `01` foi entregue, validado e auditado.
 
-## 7. Conteúdo dos arquivos
+## 8. Conteúdo dos arquivos
 
-### 7.1 Arquivo `00_orientacao_agentes.md`
+### 8.1 Arquivo `00_orientacao_agentes.md`
 
 Este é o arquivo meta. Todo agente lê antes de qualquer outro.
 
@@ -155,7 +175,7 @@ Todo agente lê este arquivo e o glossário 09 antes de qualquer outro.
 5. Nenhum agente altera arquivo fora do seu escopo de escrita.
 
 ## 4. Protocolo de divergência
-Ver seção 5 do guia. Tags válidas: PENDENTE, QUESTIONAMENTO, CONFLITO, BLOQUEIO.
+Ver seção 6 do guia. Tags válidas: PENDENTE, QUESTIONAMENTO, CONFLITO, BLOQUEIO.
 
 ## 5. Formato de entrega
 Toda resposta de agente termina com bloco "RESUMO PARA VALIDAÇÃO HUMANA"
@@ -165,7 +185,7 @@ listando o que foi feito, o que precisa de aprovação e o que ficou pendente.
 Toda contribuição deve ser assinada com nome do agente, data e versão do prompt.
 ```
 
-### 7.2 Arquivo `01_visao_geral.md`
+### 8.2 Arquivo `01_visao_geral.md`
 
 Mantém o escopo do material original, com adição de seção de riscos.
 
@@ -173,106 +193,275 @@ Mantém o escopo do material original, com adição de seção de riscos.
 # Visão geral do sistema
 
 ## 1. Objetivo do projeto
+Desenvolver um sistema multiagente para apoiar a criação, análise e implementação de um software.
+
 ## 2. Problema que o sistema resolve
+Descrever com clareza qual dor o sistema atende, quais processos serão automatizados e qual resultado final é esperado.
+
 ## 3. Atores envolvidos
+Informar quem usa o sistema, quem administra e quem consome os dados gerados.
+
 ## 4. Escopo inicial, dentro e fora
+Definir o que está dentro do projeto e o que fica fora nesta fase inicial.
+
 ## 5. Restrições técnicas
+Informar a stack obrigatória, o banco de dados, o framework, o ambiente de desenvolvimento e qualquer regra que não pode ser violada.
+
 ## 6. Premissas
+Descrever as decisões já tomadas e as suposições que a IA deve respeitar.
+
 ## 7. Riscos conhecidos
+
 ## 8. Pedido para o Agente Arquiteto
+Atue como arquiteto de software. Analise o cenário e proponha a melhor estrutura inicial, considerando arquitetura, módulos, dependências e riscos.
 ```
 
-### 7.3 Arquivo `02_requisitos_e_regras_de_negocio.md`
+O que deve ser validado neste arquivo.
+
+1. Se o problema está claro.
+2. Se os atores estão identificados.
+3. Se as restrições técnicas estão explícitas.
+4. Se a IA recebeu instruções suficientes para propor uma arquitetura coerente.
+
+### 8.3 Arquivo `02_requisitos_e_regras_de_negocio.md`
+
+Este arquivo deve detalhar o comportamento esperado do sistema. Ele é importante porque evita que a IA invente regras ou ignore limites importantes.
+
+Conteúdo recomendado.
 
 ```markdown
 # Requisitos e regras de negócio
 
 ## 1. Requisitos funcionais
+Listar o que o sistema precisa fazer, em linguagem objetiva.
+
 ## 2. Requisitos não funcionais
+Descrever desempenho, segurança, confiabilidade, padronização, usabilidade e manutenção.
+
 ## 3. Regras de negócio
+Descrever as regras que o sistema deve obedecer.
+
 ## 4. Casos de uso prioritários
+Apontar as primeiras funcionalidades que devem ser implementadas.
+
 ## 5. Critérios de aceite
+Dizer o que precisa acontecer para considerar a funcionalidade aprovada.
+
 ## 6. Dependências entre requisitos
+
 ## 7. Pedido para o Agente Arquiteto
+Organize estes requisitos, identifique inconsistências e indique lacunas que precisam ser decididas antes do desenvolvimento.
 ```
 
-### 7.4 Arquivo `03_modelagem_banco_e_dados.md`
+O que deve ser validado neste arquivo.
+
+1. Se os requisitos estão completos.
+2. Se há regras conflitantes.
+3. Se a ordem de prioridade faz sentido.
+4. Se a IA apontou dúvidas antes de codificar.
+
+### 8.4 Arquivo `03_modelagem_banco_e_dados.md`
+
+Este arquivo deve tratar da estrutura de dados. Ele deve ser criado antes do código, porque influencia toda a aplicação.
+
+Conteúdo recomendado.
 
 ```markdown
 # Modelagem de banco de dados
 
 ## 1. Objetivo da modelagem
+Descrever quais entidades serão persistidas e como elas se relacionam.
+
 ## 2. Entidades principais
+Listar as tabelas e sua função no sistema.
+
 ## 3. Relacionamentos
+Descrever cardinalidades, chaves estrangeiras e regras de integridade.
+
 ## 4. Normalização e justificativa
+Indicar até qual forma normal será aplicada e justificar a escolha.
+
 ## 5. Padrões obrigatórios
+Definir regras como tipo de chave primária, padrões de nomeação, uso de índices e restrições.
+
 ## 6. Estratégia de migração
+
 ## 7. Script inicial
+Solicitar que a IA gere o script SQL inicial com tabelas, chaves, índices e restrições.
+
 ## 8. Pedido para o Agente Arquiteto
+Analise a modelagem proposta e indique riscos, melhorias e possíveis simplificações.
 ```
 
-### 7.5 Arquivo `04_contratos_de_api.md`
+O que deve ser validado neste arquivo.
+
+1. Se os tipos de dados estão corretos.
+2. Se os relacionamentos fazem sentido.
+3. Se há integridade referencial.
+4. Se a estratégia de chave primária está consistente.
+5. Se os índices atendem às consultas esperadas.
+
+### 8.5 Arquivo `04_contratos_de_api.md`
+
+Este arquivo define a comunicação entre módulos. Ele é essencial para evitar desalinhamento entre front-end e back-end.
+
+Conteúdo recomendado.
 
 ```markdown
 # Contratos de API
 
 ## 1. Objetivo
+Definir os endpoints, métodos, parâmetros, respostas e erros esperados.
+
 ## 2. Padrão de versionamento
+Definir se a API terá versão no caminho, como /api/v1.
+
 ## 3. Autenticação e autorização
+
 ## 4. Endpoints
+Listar cada rota disponível para a funcionalidade em desenvolvimento.
+
 ## 5. Requisição e resposta com exemplos JSON reais
+Para cada endpoint, informar payload de entrada, payload de saída e exemplos reais em JSON.
+
 ## 6. Erros esperados
+Informar códigos HTTP, mensagens de erro e situações de validação.
+
 ## 7. Regras de contrato
+Definir campos obrigatórios, formatos aceitos, nomes e padrões de retorno.
+
 ## 8. Pedido para o Agente Designer de API
+Documente o contrato completo e destaque qualquer ponto ambíguo que precise de validação antes do desenvolvimento.
 ```
 
-### 7.6 Arquivo `05_desenvolvimento_backend_modulo.md`
+O que deve ser validado neste arquivo.
 
-Um arquivo por módulo. Nunca misturar funcionalidades.
+1. Se os JSONs estão coerentes.
+2. Se as rotas são consistentes.
+3. Se os status HTTP estão corretos.
+4. Se o contrato é suficiente para consumo pelo front-end.
+
+### 8.6 Arquivo `05_desenvolvimento_backend_modulo.md`
+
+Este arquivo deve ser usado para cada módulo do back-end. Um arquivo por módulo. Ele não deve misturar várias funcionalidades diferentes.
+
+Conteúdo recomendado.
 
 ```markdown
 # Desenvolvimento back-end, módulo X
 
 ## 1. Contexto do módulo
+Descrever qual funcionalidade será implementada.
+
 ## 2. Requisitos técnicos
+Informar framework, versão, banco, padrões arquiteturais e bibliotecas obrigatórias.
+
 ## 3. Contrato da API consumido
+Incluir o contrato previamente aprovado para este módulo.
+
 ## 4. O que deve ser gerado
+Solicitar entity, repository, service, controller, exceptions e configurações necessárias.
+
 ## 5. Testes obrigatórios
+Solicitar testes unitários, testes de integração e validações manuais.
+
 ## 6. Critérios de aceite
+Definir quando o módulo pode ser considerado concluído.
+
 ## 7. Pedido para o Agente Back-end
+Gere o código completo do módulo, junto com os testes, seguindo estritamente o contrato definido.
 ```
 
-### 7.7 Arquivo `06_desenvolvimento_frontend_mobile_modulo.md`
+O que deve ser validado neste arquivo.
+
+1. Se o código compila.
+2. Se as regras de negócio foram aplicadas.
+3. Se os testes unitários passam.
+4. Se os testes de integração passam.
+5. Se os endpoints se comportam conforme o contrato.
+
+### 8.7 Arquivo `06_desenvolvimento_frontend_mobile_modulo.md`
+
+Este arquivo deve ser usado para cada módulo do front-end ou mobile.
+
+Conteúdo recomendado.
 
 ```markdown
 # Desenvolvimento front-end ou mobile, módulo X
 
 ## 1. Contexto do módulo
+Descrever a tela, o fluxo e o comportamento esperado.
+
 ## 2. Contrato consumido
+Informar a API que será utilizada.
+
 ## 3. O que deve ser gerado
+Solicitar componentes, serviços de consumo, tratamento de estado e validações visuais.
+
 ## 4. Experiência esperada
+Definir carregamento, mensagem de erro, feedback de sucesso e comportamento dos formulários.
+
 ## 5. Testes obrigatórios
+Solicitar testes de renderização, testes de interação e validação manual do fluxo.
+
 ## 6. Critérios de aceite
+Definir o que a tela precisa fazer para ser aprovada.
+
 ## 7. Pedido para o Agente Front-end
+Gere a interface completa do módulo, consumindo o contrato aprovado e incluindo os testes necessários.
 ```
 
-### 7.8 Arquivo `07_plano_de_testes.md`
+O que deve ser validado neste arquivo.
+
+1. Se a interface abre corretamente.
+2. Se o consumo da API está correto.
+3. Se as mensagens de erro e sucesso aparecem adequadamente.
+4. Se os estados de carregamento e submissão funcionam.
+5. Se a experiência de uso está coerente.
+
+### 8.8 Arquivo `07_plano_de_testes.md`
+
+Este arquivo deve centralizar a estratégia de verificação. Ele é muito importante para projetos com IA, porque obriga a equipe a pensar em qualidade desde o começo.
+
+Conteúdo recomendado.
 
 ```markdown
 # Plano de testes
 
 ## 1. Objetivo
+Definir como cada etapa será validada.
+
 ## 2. Testes de arquitetura
+Descrever verificações de consistência técnica, restrições e padrões.
+
 ## 3. Testes de back-end
+Descrever testes unitários, testes de integração e validações manuais via terminal ou ferramenta de API.
+
 ## 4. Testes de front-end ou mobile
+Descrever testes de tela, comportamento visual, integração com API e cenários de erro.
+
 ## 5. Critérios de aprovação
+Explicar quando uma tarefa pode ser marcada como concluída.
+
 ## 6. Evidências
+Registrar logs, capturas, saídas de console e resultados dos testes.
+
 ## 7. Pedido para o Agente de QA
+Organize os testes por prioridade e indique o que deve ser validado em cada etapa de desenvolvimento.
 ```
 
-### 7.9 Arquivo `08_log_de_evolucao.md`
+O que deve ser validado neste arquivo.
 
-Versão enriquecida. Cada entrada agora registra agente, prompt e validador.
+1. Se os testes cobrem o fluxo principal.
+2. Se há validação manual e automatizada.
+3. Se os critérios de aprovação estão claros.
+4. Se existe rastreabilidade dos resultados.
+
+### 8.9 Arquivo `08_log_de_evolucao.md`
+
+Este arquivo serve para acompanhar o andamento do projeto, o que foi feito, o que passou nos testes e o que ainda está pendente. Cada entrada registra agente, prompt e validador.
+
+Conteúdo recomendado.
 
 ```markdown
 # Log de evolução do projeto
@@ -313,7 +502,7 @@ Formato:
 Tag de versão, módulos incluídos, data de fechamento.
 ```
 
-### 7.10 Arquivo `09_glossario_dominio.md`
+### 8.10 Arquivo `09_glossario_dominio.md`
 
 Dicionário compartilhado. Evita que agentes usem termos diferentes para a mesma coisa.
 
@@ -336,11 +525,11 @@ Quando um termo gerou divergência, registrar a decisão final aqui.
 Manter este arquivo consistente. Toda nova definição passa por humano.
 ```
 
-## 8. Prompts especializados por agente
+## 9. Prompts especializados por agente
 
-Cada agente recebe um prompt próprio. O modelo genérico do material original foi substituído por seis prompts especializados.
+Cada agente recebe um prompt próprio. O modelo possui seis prompts especializados.
 
-### 8.1 Prompt do Agente Arquiteto
+### 9.1 Prompt do Agente Arquiteto
 
 ```
 Você é o Agente Arquiteto em um sistema multiagente.
@@ -364,7 +553,7 @@ listando decisões tomadas, pontos pendentes e próxima ação sugerida.
 ASSINATURA: Agente Arquiteto, data, versão do prompt.
 ```
 
-### 8.2 Prompt do Agente Designer de API
+### 9.2 Prompt do Agente Designer de API
 
 ```
 Você é o Agente Designer de API em um sistema multiagente.
@@ -389,7 +578,7 @@ antes do desenvolvimento começar. Termine com "RESUMO PARA VALIDAÇÃO HUMANA".
 ASSINATURA: Agente Designer de API, data, versão do prompt.
 ```
 
-### 8.3 Prompt do Agente Back-end
+### 9.3 Prompt do Agente Back-end
 
 ```
 Você é o Agente Back-end em um sistema multiagente.
@@ -414,7 +603,7 @@ executados. Termine com "RESUMO PARA VALIDAÇÃO HUMANA".
 ASSINATURA: Agente Back-end, data, versão do prompt.
 ```
 
-### 8.4 Prompt do Agente Front-end e Mobile
+### 9.4 Prompt do Agente Front-end e Mobile
 
 ```
 Você é o Agente Front-end em um sistema multiagente.
@@ -439,7 +628,7 @@ ENTREGA: código mais testes mais evidências de execução. Termine com
 ASSINATURA: Agente Front-end, data, versão do prompt.
 ```
 
-### 8.5 Prompt do Agente de QA
+### 9.5 Prompt do Agente de QA
 
 ```
 Você é o Agente de QA em um sistema multiagente.
@@ -465,7 +654,7 @@ severidade. Termine com "RESUMO PARA VALIDAÇÃO HUMANA".
 ASSINATURA: Agente de QA, data, versão do prompt.
 ```
 
-### 8.6 Prompt do Agente Documentador
+### 9.6 Prompt do Agente Documentador
 
 ```
 Você é o Agente Documentador em um sistema multiagente.
@@ -489,7 +678,7 @@ ENTREGA: 08 atualizado mais resumo do que foi consolidado. Termine com
 ASSINATURA: Agente Documentador, data, versão do prompt.
 ```
 
-## 9. Fluxo ideal de uso, versão revisada
+## 10. Fluxo ideal de uso, versão revisada
 
 1. Humano cria `00` e `09` iniciais.
 2. Humano cria `01` com escopo do projeto.
@@ -508,11 +697,11 @@ ASSINATURA: Agente Documentador, data, versão do prompt.
 8. Ao final do escopo, fecha versão.
 9. Ao final do projeto, fecha projeto.
 
-## 10. Inicialização dos agentes no GitHub Codespaces com plano Education
+## 11. Inicialização dos agentes no GitHub Codespaces com plano Education
 
 Esta seção descreve como operar o sistema multiagente dentro do GitHub Codespaces, considerando as restrições reais do plano Copilot Student vinculado à conta Education em abril de 2026.
 
-### 10.1 Restrições do plano Student que afetam o modelo
+### 11.1 Restrições do plano Student que afetam o modelo
 
 O plano Copilot Student não permite seleção manual de modelos premium como Claude Opus, Claude Sonnet e GPT-5.4. Esses modelos seguem acessíveis apenas pelo modo Auto, que escolhe o modelo automaticamente conforme a tarefa. Existe também cota mensal de requisições premium, que se esgota rápido em projetos multiagente se não houver disciplina de uso.
 
@@ -523,16 +712,16 @@ Consequências práticas para o modelo.
 3. A cota de requisições premium precisa ser preservada para fases de maior valor, principalmente arquitetura e definição de contratos.
 4. Tarefas de baixo valor cognitivo, como geração de boilerplate, podem ser feitas em modelos leves do Auto sem prejuízo.
 
-### 10.2 Estratégia de isolamento de agentes dentro do Codespace
+### 11.2 Estratégia de isolamento de agentes dentro do Codespace
 
 Um chat único para todos os agentes contamina o contexto e quebra o isolamento de papéis. A estratégia recomendada usa múltiplas sessões de Copilot Chat dentro de um único Codespace, uma sessão por agente ativo no momento.
 
 1. Cada sessão é renomeada com o nome do agente, por exemplo, `Agente Arquiteto`, `Agente Back-end Modulo X`.
 2. Cada sessão é inicializada com o prompt especializado correspondente.
 3. Cada sessão recebe apenas os arquivos relevantes ao papel do agente, anexados via `#file:`.
-4. O Codespace permanece o mesmo. Não é necessário criar um Codespace por agente. Isso preservaria horas do plano Education sem ganho real.
+4. O Codespace permanece o mesmo. Não é necessário criar um Codespace por agente, pois isso consumiria horas do plano Education sem ganho real.
 
-### 10.3 Estrutura recomendada do repositório
+### 11.3 Estrutura recomendada do repositório
 
 ```
 seu-projeto/
@@ -562,7 +751,7 @@ seu-projeto/
 
 A pasta `prompts/` versiona os prompts especializados, evitando que sejam reescritos a cada sessão. A pasta `.github/` carrega instruções persistentes lidas automaticamente em toda sessão de Copilot Chat do projeto.
 
-### 10.4 Arquivo `.github/copilot-instructions.md`
+### 11.4 Arquivo `.github/copilot-instructions.md`
 
 Este arquivo é lido automaticamente pelo Copilot Chat em todas as sessões abertas dentro do repositório. Use-o para carregar as regras universais do `00_orientacao_agentes.md` sem precisar repeti-las a cada novo chat.
 
@@ -578,7 +767,7 @@ seguintes regras universais.
 1. Você está atuando como um agente especializado. Seu papel é definido
    no primeiro prompt da sessão atual. Nunca extrapole esse papel.
 2. Não invente informação. Em caso de dúvida, abra divergência seguindo
-   o protocolo descrito no item 5 do guia.
+   o protocolo descrito na seção 6 do guia.
 3. Use somente termos do glossário em docs/09_glossario_dominio.md.
 4. Toda resposta termina com bloco RESUMO PARA VALIDAÇÃO HUMANA.
 5. Não altere arquivos fora do escopo de escrita do agente atual.
@@ -587,15 +776,15 @@ Se a sessão começar sem prompt de agente especializado, pergunte qual
 agente você deve assumir antes de prosseguir.
 ```
 
-### 10.5 Passo a passo de inicialização
+### 11.5 Passo a passo de inicialização
 
 Etapa 1, preparar o repositório.
 
 1. Crie um repositório novo no GitHub.
-2. Crie a estrutura de pastas descrita em 10.3.
+2. Crie a estrutura de pastas descrita em 11.3.
 3. Popule `docs/00_orientacao_agentes.md` e `docs/09_glossario_dominio.md`.
-4. Popule `prompts/` com os prompts especializados da seção 8.
-5. Popule `.github/copilot-instructions.md` conforme 10.4.
+4. Popule `prompts/` com os prompts especializados da seção 9.
+5. Popule `.github/copilot-instructions.md` conforme 11.4.
 6. Faça commit inicial.
 
 Etapa 2, abrir o Codespace.
@@ -623,12 +812,12 @@ Etapa 5, executar o ciclo.
 2. Outputs aprovados pelo humano são commitados imediatamente.
 3. O Documentador é acionado em sessão própria, recebendo apenas o resumo do que foi feito por outros agentes, nunca o histórico bruto.
 
-### 10.6 Padrão de mensagem inicial em cada sessão
+### 11.6 Padrão de mensagem inicial em cada sessão
 
 Cada sessão de agente começa com uma mensagem no formato.
 
 ```markdown
-[Cole aqui o prompt completo do agente correspondente, da seção 8]
+[Cole aqui o prompt completo do agente correspondente, da seção 9]
 
 Contexto desta sessão.
 - Fase atual do projeto: [arquitetura | contratos | módulo X | QA | documentação]
@@ -643,7 +832,7 @@ Tarefa imediata.
 [descreva objetivamente o que o agente deve produzir agora]
 ```
 
-### 10.7 Disciplina de uso da cota de requisições premium
+### 11.7 Disciplina de uso da cota de requisições premium
 
 O plano Student tem cota mensal limitada de requisições premium. Sem disciplina, a cota acaba antes do fim do ciclo. Recomendações.
 
@@ -653,7 +842,7 @@ O plano Student tem cota mensal limitada de requisições premium. Sem disciplin
 4. Evite reabrir o mesmo problema em sessões diferentes. Isso gera retrabalho e consome cota duas vezes.
 5. Antes de cada sessão, pergunte-se se a tarefa precisa mesmo de IA ou se pode ser feita manualmente em minutos.
 
-### 10.8 Estratégia híbrida recomendada
+### 11.8 Estratégia híbrida recomendada
 
 Quando a cota do Copilot Student começar a apertar, ou quando a qualidade do raciocínio for crítica, vale combinar duas ferramentas.
 
@@ -663,12 +852,12 @@ Quando a cota do Copilot Student começar a apertar, ou quando a qualidade do ra
 
 Essa divisão preserva a cota premium para o trabalho de implementação, onde a integração com o ambiente compensa, e move o trabalho de raciocínio puro para um canal sem cota dura.
 
-### 10.9 Versionamento e auditoria
+### 11.9 Versionamento e auditoria
 
 A cada artefato aprovado por humano, faça commit. Isso traz dois benefícios.
 
 1. O histórico do Git vira camada secundária do log de evolução, com diff exato do que cada agente produziu.
-2. Em caso de erro de agente, o reverso é trivial.
+2. Em caso de erro de agente, a reversão é trivial.
 
 Convenção de mensagem de commit recomendada.
 
@@ -691,7 +880,7 @@ Validação humana: João.
 Referência: docs/08_log_de_evolucao.md, entrada 2026-04-29-3.
 ```
 
-### 10.10 Limites do ambiente que você precisa aceitar
+### 11.10 Limites do ambiente que você precisa aceitar
 
 1. Não há separação real de modelos por agente. Todos rodam pelo Auto.
 2. A cota mensal é finita. Planeje os ciclos de módulo conforme isso.
@@ -699,6 +888,6 @@ Referência: docs/08_log_de_evolucao.md, entrada 2026-04-29-3.
 4. O isolamento entre agentes é por sessão de chat, não por processo. Ele depende de disciplina humana, não de barreira técnica.
 5. O Copilot dentro do VS Code não tem memória de longo prazo entre sessões. O contexto vem dos arquivos do repositório, daí a importância do `08_log_de_evolucao.md` bem mantido.
 
-## 11. Recomendação de adoção
+## 12. Recomendação de adoção
 
 Aplique este modelo primeiro em um projeto pequeno, com um módulo de back-end e um módulo de front-end. Isso vai expor lacunas que só aparecem na execução real, principalmente no protocolo de divergência e no fluxo de validação humana. Após o primeiro ciclo completo, ajuste os prompts conforme os pontos de fricção observados, e só então escale para projetos maiores.
