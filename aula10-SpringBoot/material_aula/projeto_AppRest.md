@@ -15,7 +15,7 @@ PROFESSOR RAFAEL MARINHO E SILVA
 
 Este tutorial mostra como construir um aplicativo mobile em React Native com Expo para cadastrar, listar, detalhar, editar e excluir pessoas a partir de uma API REST criada em Spring Boot.
 
-O material segue a mesma lógica didática do arquivo `aulaSpring.md`, que organiza a construção em passos, explica cada camada e apresenta os códigos com comentários pedagógicos. Também leva em conta o arquivo `pessoa.http`, que aponta a base URL pública do Codespace e usa as rotas `POST /api/pessoas`, `GET /api/pessoas`, `GET /api/pessoas/{id}` e `DELETE /api/pessoas/{id}` como referência para os testes da API.
+O material segue a mesma lógica do arquivo `pessoa.http`, que aponta a base URL pública do Codespace e usa as rotas `POST /api/pessoas`, `GET /api/pessoas`, `GET /api/pessoas/{id}`, `PUT /api/pessoas/{id}` e `DELETE /api/pessoas/{id}` como referência para os testes da API.
 
 O aplicativo terá três telas principais:
 
@@ -44,8 +44,6 @@ A solução se organiza em duas partes independentes que se comunicam via HTTP.
 ```
 
 O backend entrega e recebe objetos `Pessoa` em formato JSON. O mobile consome essa API com `axios`, organiza as telas com React Navigation e apresenta os dados com componentes nativos.
-
-O arquivo `pessoa.http` já mostra o estilo de comunicação esperado. Para completar o CRUD no aplicativo, também é necessário o endpoint de atualização `PUT /api/pessoas/{id}`, cuja implementação está detalhada no tutorial `aulaSpring.md`.
 
 
 ---

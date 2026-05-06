@@ -1,3 +1,5 @@
+// App.js
+
 import 'react-native-gesture-handler'
 import React from 'react'
 import { NavigationContainer } from '@react-navigation/native'
@@ -19,10 +21,19 @@ export default function App() {
         <Stack.Navigator
           initialRouteName="PessoaList"
           screenOptions={{
-            headerStyle: { backgroundColor: '#ffffff' },
-            headerTitleStyle: { fontWeight: '700' },
-            headerTintColor: '#0f172a',
-            contentStyle: { backgroundColor: '#f8fafc' }
+            headerStyle: {
+              backgroundColor: '#ffffff',
+            },
+            headerTitleStyle: {
+              fontWeight: '700',
+              fontSize: 18,
+              color: '#0f172a',
+            },
+            headerTintColor: '#2563eb',
+            headerShadowVisible: false,
+            contentStyle: {
+              backgroundColor: '#f8fafc',
+            },
           }}
         >
           <Stack.Screen
@@ -33,12 +44,14 @@ export default function App() {
           <Stack.Screen
             name="PessoaDetail"
             component={PessoaDetailScreen}
-            options={{ title: 'Detalhes da Pessoa' }}
+            options={{ title: 'Detalhes' }}
           />
           <Stack.Screen
             name="PessoaForm"
             component={PessoaFormScreen}
-            options={{ title: 'Cadastro' }}
+            options={({ route }) => ({
+              title: route.params?.id ? 'Editar Pessoa' : 'Nova Pessoa',
+            })}
           />
         </Stack.Navigator>
       </NavigationContainer>
