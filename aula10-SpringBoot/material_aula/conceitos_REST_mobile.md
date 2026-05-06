@@ -6,6 +6,8 @@ BACHARELADO EM SISTEMAS DE INFORMAÇÃO
 
 DISCIPLINA: DESENVOLVIMENTO DE SISTEMAS DE INFORMAÇÃO AVANÇADOS II
 
+PROFESSOR: RAFAEL MARINHO E SILVA
+
 ---
 
 ## Apresentação
@@ -23,11 +25,11 @@ API é a sigla para **Application Programming Interface** (Interface de Programa
 Uma analogia clássica é a de um restaurante:
 
 ```
-┌─────────────┐        ┌───────────┐        ┌─────────────┐
-│   Cliente   │ ──────>│  Garçom   │ ──────>│   Cozinha   │
-│  (App Mobile)│  pedido│   (API)   │ repassa│  (Servidor) │
-│             │ <──────│           │ <──────│             │
-└─────────────┘ prato  └───────────┘ entrega└─────────────┘
+┌──────────────┐        ┌───────────┐        ┌─────────────┐
+│   Cliente    │ ──────>│  Garçom   │ ──────>│   Cozinha   │
+│ (App Mobile) │  pedido│   (API)   │ repassa│  (Servidor) │
+│              │ <──────│           │ <──────│             │
+└──────────────┘ prato  └───────────┘ entrega└─────────────┘
 ```
 
 O cliente (app mobile) não precisa saber como a cozinha (servidor) prepara o prato. Ele apenas faz o pedido ao garçom (API) usando a linguagem do cardápio (contrato da API) e recebe o resultado.
