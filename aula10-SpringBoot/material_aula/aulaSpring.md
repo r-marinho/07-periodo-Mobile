@@ -254,6 +254,8 @@ Injeção por construtor: promove classes imutáveis e facilita testes.
 
 Optional: representa possibilidade de valor ausente, evitando null.
 
+`atualizarPessoa`: busca a pessoa pelo `id`; se encontrada, atualiza os campos e persiste; se não encontrada, retorna `Optional.empty()` para que o controller responda com `404`.
+
 Crie uma classe de serviço em `com.example.projeto.service` para encapsular a lógica de negócio:
 
 ```java
@@ -286,6 +288,15 @@ public class PessoaService{
         return pessoaRepository.save(pessoa);
     }
 
+    public Optional<Pessoa> atualizarPessoa(Long id, Pessoa pessoaAtualizada){
+        return pessoaRepository.findById(id)
+            .map(pessoaExistente -> {
+                pessoaExistente.setNome(pessoaAtualizada.getNome());
+                pessoaExistente.setIdade(pessoaAtualizada.getIdade());
+                return pessoaRepository.save(pessoaExistente);
+            });
+    }
+
     public void deletarPessoa(Long id){
         pessoaRepository.deleteById(id);
     }
@@ -296,6 +307,8 @@ Injeção de Dependências: O Spring automaticamente injeta a instância de `Pes
 
 Gerenciamento de Transações: A anotação `@Transactional` no método salvar garante que a operação de persistência seja tratada dentro de uma transação. Se algo der errado, o Spring fará rollback automaticamente, mantendo a consistência dos dados.
 
+Método `atualizarPessoa`: usa `findById` para recuperar a entidade gerenciada pelo JPA. Ao chamar `save` dentro do `map`, o Hibernate detecta que o objeto já existe no banco (por ter um `id` definido) e executa um `UPDATE` em vez de um `INSERT`. Se o `id` não for encontrado, o `Optional` estará vazio e o controller poderá retornar `404 Not Found` sem lançar exceção.
+
 ### Passo 6: Criando API REST (Controller)
 
 #### Camada Controller (API Rest )- Classe PessoaController
@@ -304,7 +317,7 @@ Gerenciamento de Transações: A anotação `@Transactional` no método salvar g
 
 `@RequestMapping`: prefixa todas as rotas com `/api/pessoas`.
 
-`@GetMapping`, `@PostMapping`, `@DeleteMapping`: mapeiam métodos HTTP para operações CRUD.
+`@GetMapping`, `@PostMapping`, `@PutMapping`, `@DeleteMapping`: mapeiam métodos HTTP para as operações de leitura, criação, atualização e exclusão do CRUD.
 
 `ResponseEntity`: constrói respostas HTTP completas, com status e corpo.
 
@@ -322,6 +335,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;  
 import org.springframework.web.bind.annotation.RequestBody;   
 
@@ -355,6 +369,15 @@ public class PessoaController{
         return pessoaService.salvarPessoa(pessoa);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Pessoa> atualizarPessoa(
+            @PathVariable Long id,
+            @RequestBody Pessoa pessoaAtualizada) {
+        return pessoaService.atualizarPessoa(id, pessoaAtualizada)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarPessoa(@PathVariable Long id){
         pessoaService.deletarPessoa(id);
@@ -362,6 +385,8 @@ public class PessoaController{
     }
 }
 ```
+
+`@PutMapping("/{id}")`: mapeia requisições HTTP `PUT` para `/api/pessoas/{id}`. Recebe o `id` pela URL e o objeto atualizado pelo corpo da requisição (`@RequestBody`). Delega ao serviço, que busca a entidade no banco e atualiza os campos. Se a pessoa existir, retorna `200 OK` com o objeto atualizado; se não existir, retorna `404 Not Found`.
 
 ### Passo 6: Criando Interface Web com Thymeleaf (Controller + Views)
 
@@ -832,3 +857,283 @@ O comando `git push origin main` envia os commits do seu repositório local para
 ```bash
 git push origin main
 ```
+
+---
+
+## PRODUTO – Cadastro de produtos com Spring Boot REST
+
+Esta seção apresenta a implementação completa do CRUD de produtos, seguindo a mesma arquitetura em camadas utilizada no cadastro de pessoas. A entidade `Produto` possui três atributos além do identificador: `nome`, `quantidade` e `valor`.
+
+### Camada de Modelo (Model) – Entidade Produto
+
+`@Entity` e `@Table`: registram a classe no JPA e mapeiam para a tabela `produtos`.
+
+`@Id` e `@GeneratedValue`: definem a chave primária com geração automática pelo banco.
+
+`Double` para `valor`: tipo adequado para representar valores monetários simples sem precisão decimal rigorosa. Para sistemas financeiros de produção, prefira `BigDecimal`.
+
+Crie a classe `Produto` no pacote `com.example.projeto.model`:
+
+```java
+package com.example.projeto.model;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "produtos")
+public class Produto {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String nome;
+    private Integer quantidade;
+    private Double valor;
+
+    public Produto() {}
+
+    public Produto(String nome, Integer quantidade, Double valor) {
+        this.nome = nome;
+        this.quantidade = quantidade;
+        this.valor = valor;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public Integer getQuantidade() {
+        return quantidade;
+    }
+
+    public void setQuantidade(Integer quantidade) {
+        this.quantidade = quantidade;
+    }
+
+    public Double getValor() {
+        return valor;
+    }
+
+    public void setValor(Double valor) {
+        this.valor = valor;
+    }
+}
+```
+
+### Camada de Persistência (Repository) – ProdutoRepository
+
+`JpaRepository<Produto, Long>`: fornece os métodos CRUD prontos (`findAll`, `findById`, `save`, `deleteById`) sem necessidade de implementação explícita.
+
+Crie a interface no pacote `com.example.projeto.repository`:
+
+```java
+package com.example.projeto.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import com.example.projeto.model.Produto;
+
+public interface ProdutoRepository extends JpaRepository<Produto, Long> {
+}
+```
+
+### Camada de Serviço (Service) – ProdutoService
+
+`@Service`: declara a classe como componente de serviço gerenciado pelo Spring.
+
+Injeção por construtor: garante imutabilidade da dependência e facilita testes unitários.
+
+`atualizarProduto`: busca o produto pelo `id`; se encontrado, atualiza os três campos e persiste; se não encontrado, retorna `Optional.empty()` para que o controller responda com `404 Not Found`.
+
+Crie a classe no pacote `com.example.projeto.service`:
+
+```java
+package com.example.projeto.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
+import com.example.projeto.model.Produto;
+import com.example.projeto.repository.ProdutoRepository;
+
+@Service
+public class ProdutoService {
+
+    private final ProdutoRepository produtoRepository;
+
+    public ProdutoService(ProdutoRepository produtoRepository) {
+        this.produtoRepository = produtoRepository;
+    }
+
+    public List<Produto> listarProdutos() {
+        return produtoRepository.findAll();
+    }
+
+    public Optional<Produto> buscarPorId(Long id) {
+        return produtoRepository.findById(id);
+    }
+
+    public Produto salvarProduto(Produto produto) {
+        return produtoRepository.save(produto);
+    }
+
+    public Optional<Produto> atualizarProduto(Long id, Produto produtoAtualizado) {
+        return produtoRepository.findById(id)
+            .map(produtoExistente -> {
+                produtoExistente.setNome(produtoAtualizado.getNome());
+                produtoExistente.setQuantidade(produtoAtualizado.getQuantidade());
+                produtoExistente.setValor(produtoAtualizado.getValor());
+                return produtoRepository.save(produtoExistente);
+            });
+    }
+
+    public void deletarProduto(Long id) {
+        produtoRepository.deleteById(id);
+    }
+}
+```
+
+Método `atualizarProduto`: usa `findById` para recuperar a entidade gerenciada pelo JPA. Ao chamar `save` dentro do `map`, o Hibernate detecta que o objeto já possui `id` e executa um `UPDATE` em vez de um `INSERT`. Se o `id` não for encontrado, o `Optional` estará vazio e o controller retornará `404 Not Found` sem lançar exceção.
+
+### Camada Controller (API REST) – ProdutoController
+
+`@RestController`: combina `@Controller` e `@ResponseBody`, fazendo com que cada método retorne JSON diretamente.
+
+`@RequestMapping("/api/produtos")`: prefixa todas as rotas com `/api/produtos`.
+
+`@GetMapping`, `@PostMapping`, `@PutMapping`, `@DeleteMapping`: mapeiam os métodos HTTP para as operações de leitura, criação, atualização e exclusão do CRUD.
+
+`ResponseEntity`: constrói respostas HTTP completas com código de status e corpo.
+
+`@PathVariable` e `@RequestBody`: extraem dados da URL e do corpo da requisição, respectivamente.
+
+Crie a classe no pacote `com.example.projeto.controller`:
+
+```java
+package com.example.projeto.controller;
+
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.projeto.model.Produto;
+import com.example.projeto.service.ProdutoService;
+
+@RestController
+@RequestMapping("/api/produtos")
+public class ProdutoController {
+
+    private final ProdutoService produtoService;
+
+    public ProdutoController(ProdutoService produtoService) {
+        this.produtoService = produtoService;
+    }
+
+    @GetMapping
+    public List<Produto> listarProdutos() {
+        return produtoService.listarProdutos();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Produto> buscarProduto(@PathVariable Long id) {
+        return produtoService.buscarPorId(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping
+    public Produto criarProduto(@RequestBody Produto produto) {
+        return produtoService.salvarProduto(produto);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Produto> atualizarProduto(
+            @PathVariable Long id,
+            @RequestBody Produto produtoAtualizado) {
+        return produtoService.atualizarProduto(id, produtoAtualizado)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarProduto(@PathVariable Long id) {
+        produtoService.deletarProduto(id);
+        return ResponseEntity.noContent().build();
+    }
+}
+```
+
+`@GetMapping` sem parâmetro: lista todos os produtos, retornando `200 OK` com array JSON.
+
+`@GetMapping("/{id}")`: busca um produto pelo identificador. Retorna `200 OK` com o objeto ou `404 Not Found` caso não exista.
+
+`@PostMapping`: recebe o corpo da requisição como `Produto`, persiste e retorna o objeto salvo (com `id` gerado pelo banco).
+
+`@PutMapping("/{id}")`: recebe o `id` pela URL e os novos dados pelo corpo. Delega ao serviço, que atualiza apenas os campos alterados. Retorna `200 OK` com o objeto atualizado ou `404 Not Found`.
+
+`@DeleteMapping("/{id}")`: remove o produto pelo `id` e retorna `204 No Content`, indicando que a operação foi bem-sucedida sem corpo de resposta.
+
+### Testando a API com REST Client (produto.http)
+
+Com a aplicação em execução, utilize o arquivo `produto.http` para testar todos os endpoints. O bloco `###` separa cada requisição dentro do mesmo arquivo.
+
+```http
+# Definição de variáveis (ambiente "local" do REST Client)
+@base_url = INSERIR A URL DA SUA PORTA 8080 (PÚBLICA)
+
+### Inserir novo produto
+POST {{ base_url }}/api/produtos
+Content-Type: application/json
+
+{
+  "nome": "Notebook",
+  "quantidade": 10,
+  "valor": 3899.99
+}
+
+### Listar todos os produtos
+GET {{ base_url }}/api/produtos
+Accept: application/json
+
+### Buscar produto por ID
+GET {{ base_url }}/api/produtos/1
+Accept: application/json
+
+### Atualizar produto (PUT)
+PUT {{ base_url }}/api/produtos/1
+Content-Type: application/json
+
+{
+  "nome": "Notebook Pro",
+  "quantidade": 5,
+  "valor": 4299.99
+}
+
+### Remover produto (DELETE)
+DELETE {{ base_url }}/api/produtos/1
+Accept: */*
+```
+
+A variável `@base_url` centraliza o endereço do backend. Substitua pelo valor real da URL pública gerada ao expor a porta 8080 no Codespace. Cada bloco separado por `###` representa uma operação independente do CRUD.

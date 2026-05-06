@@ -43,163 +43,12 @@ A solução se organiza em duas partes independentes que se comunicam via HTTP.
 
 O backend entrega e recebe objetos `Pessoa` em formato JSON. O mobile consome essa API com `axios`, organiza as telas com React Navigation e apresenta os dados com componentes nativos.
 
-O arquivo `pessoa.http` já mostra o estilo de comunicação esperado. Para completar o CRUD no aplicativo, também é necessário o endpoint de atualização `PUT /api/pessoas/{id}`. O próximo passo mostra como incluí-lo no backend.
+O arquivo `pessoa.http` já mostra o estilo de comunicação esperado. Para completar o CRUD no aplicativo, também é necessário o endpoint de atualização `PUT /api/pessoas/{id}`, cuja implementação está detalhada no tutorial `aulaSpring.md`.
+
 
 ---
 
-## Passo 2: Adicionando o endpoint de atualização ao backend Spring Boot
-
-> **Importante:** O arquivo `aulaSpring.md` apresenta o `PessoaController` com os métodos `GET`, `POST` e `DELETE`, mas **não inclui o método de atualização `PUT`**. Sem esse endpoint, a edição de pessoas no app mobile não funcionará. Adicione o método abaixo ao `PessoaController` antes de continuar.
-
-Abra a classe `PessoaController` no pacote `com.example.projeto.controller` e acrescente a importação e o método:
-
-```java
-// Adicione esta importação junto com as demais no topo da classe
-import org.springframework.web.bind.annotation.PutMapping;
-```
-
-Dentro da classe `PessoaController`, após o método `criarPessoa`, adicione:
-
-```java
-@PutMapping("/{id}")
-public ResponseEntity<Pessoa> atualizarPessoa(
-        @PathVariable Long id,
-        @RequestBody Pessoa pessoaAtualizada) {
-
-    return pessoaService.buscarPorId(id)
-        .map(pessoaExistente -> {
-            pessoaExistente.setNome(pessoaAtualizada.getNome());
-            pessoaExistente.setIdade(pessoaAtualizada.getIdade());
-            Pessoa salva = pessoaService.salvarPessoa(pessoaExistente);
-            return ResponseEntity.ok(salva);
-        })
-        .orElse(ResponseEntity.notFound().build());
-}
-```
-
-### Explicação do código
-
-`@PutMapping("/{id}")` mapeia requisições HTTP `PUT` para a rota `/api/pessoas/{id}`.
-
-`@PathVariable Long id` extrai o identificador da URL.
-
-`@RequestBody Pessoa pessoaAtualizada` recebe o corpo da requisição JSON e o converte para um objeto `Pessoa`.
-
-`buscarPorId(id)` retorna um `Optional<Pessoa>`. Se a pessoa existir, atualiza os campos e salva. Se não existir, retorna `404 Not Found`.
-
-O método `salvarPessoa` reutiliza a lógica já existente no `PessoaService` sem precisar criar um novo método.
-
-Após a alteração, o `PessoaController` completo ficará assim:
-
-```java
-package com.example.projeto.controller;
-
-import java.util.List;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.example.projeto.model.Pessoa;
-import com.example.projeto.service.PessoaService;
-
-@RestController
-@RequestMapping("/api/pessoas")
-public class PessoaController {
-
-    private final PessoaService pessoaService;
-
-    public PessoaController(PessoaService pessoaService) {
-        this.pessoaService = pessoaService;
-    }
-
-    @GetMapping
-    public List<Pessoa> listarPessoas() {
-        return pessoaService.listarPessoas();
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Pessoa> buscarPessoa(@PathVariable Long id) {
-        return pessoaService.buscarPorId(id)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PostMapping
-    public Pessoa criarPessoa(@RequestBody Pessoa pessoa) {
-        return pessoaService.salvarPessoa(pessoa);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Pessoa> atualizarPessoa(
-            @PathVariable Long id,
-            @RequestBody Pessoa pessoaAtualizada) {
-
-        return pessoaService.buscarPorId(id)
-            .map(pessoaExistente -> {
-                pessoaExistente.setNome(pessoaAtualizada.getNome());
-                pessoaExistente.setIdade(pessoaAtualizada.getIdade());
-                Pessoa salva = pessoaService.salvarPessoa(pessoaExistente);
-                return ResponseEntity.ok(salva);
-            })
-            .orElse(ResponseEntity.notFound().build());
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarPessoa(@PathVariable Long id) {
-        pessoaService.deletarPessoa(id);
-        return ResponseEntity.noContent().build();
-    }
-}
-```
-
-### Arquivo pessoa.http atualizado
-
-Depois de incluir o `PUT`, atualize também o arquivo `pessoa.http` para ter todos os testes do CRUD completo:
-
-```http
-# Definição de variáveis (ambiente "local" do REST Client)
-@base_url = https://SEU-CODESPACE-8080.app.github.dev
-
-### Inserir nova pessoa
-POST {{ base_url }}/api/pessoas
-Content-Type: application/json
-
-{
-  "nome": "Gabriel",
-  "idade": 28
-}
-
-### Listar todas as pessoas
-GET {{ base_url }}/api/pessoas
-Accept: application/json
-
-### Buscar pessoa por ID
-GET {{ base_url }}/api/pessoas/1
-Accept: application/json
-
-### Atualizar pessoa (PUT)
-PUT {{ base_url }}/api/pessoas/1
-Content-Type: application/json
-
-{
-  "nome": "Gabriel Silva",
-  "idade": 29
-}
-
-### Remover pessoa (DELETE)
-DELETE {{ base_url }}/api/pessoas/1
-Accept: */*
-```
-
----
-
-## Passo 3: Criando o projeto no GitHub Codespaces
+## Passo 2: Criando o projeto no GitHub Codespaces
 
 No terminal do Codespace, crie o projeto com o comando:
 
@@ -223,7 +72,7 @@ npx expo start --tunnel
 
 ---
 
-## Passo 4: Instalando as dependências
+## Passo 3: Instalando as dependências
 
 O projeto precisa de navegação, consumo de API e suporte a gestos nativos.
 
@@ -245,7 +94,7 @@ O pacote `@expo/vector-icons` já faz parte do SDK do Expo e não precisa ser in
 
 ---
 
-## Passo 5: Estrutura de pastas do aplicativo
+## Passo 4: Estrutura de pastas do aplicativo
 
 Organize o projeto desta forma antes de criar os arquivos:
 
@@ -274,7 +123,7 @@ Essa organização separa bem as responsabilidades:
 
 ---
 
-## Passo 6: Configurando a base da API
+## Passo 5: Configurando a base da API
 
 Crie a pasta `src/services/` e dentro dela o arquivo `api.js`.
 
@@ -311,7 +160,7 @@ export default api
 
 ---
 
-## Passo 7: Criando o componente de feedback (FeedbackModal)
+## Passo 6: Criando o componente de feedback (FeedbackModal)
 
 Crie a pasta `src/components/` e o arquivo `FeedbackModal.js`.
 
@@ -425,7 +274,7 @@ O ícone `checkmark-circle` é exibido em verde para sucesso, e `close-circle` e
 
 ---
 
-## Passo 8: Criando o componente de confirmação (ConfirmacaoModal)
+## Passo 7: Criando o componente de confirmação (ConfirmacaoModal)
 
 Crie o arquivo `src/components/ConfirmacaoModal.js`.
 
@@ -552,7 +401,7 @@ O botão Cancelar tem fundo claro e texto escuro, pois é a ação segura. O bot
 
 ---
 
-## Passo 9: Componente reutilizável de cartão (PessoaCard)
+## Passo 8: Componente reutilizável de cartão (PessoaCard)
 
 Crie o arquivo `src/components/PessoaCard.js`.
 
@@ -644,7 +493,7 @@ O ícone `chevron-forward` no lado direito indica visualmente que o item é clic
 
 ---
 
-## Passo 10: Criando a tela de listagem (PessoaListScreen)
+## Passo 9: Criando a tela de listagem (PessoaListScreen)
 
 Crie o arquivo `src/screens/PessoaListScreen.js`.
 
@@ -862,7 +711,7 @@ O `FeedbackModal` é exibido apenas quando ocorre um erro ao carregar a lista.
 
 ---
 
-## Passo 11: Criando a tela de formulário para cadastro e edição (PessoaFormScreen)
+## Passo 10: Criando a tela de formulário para cadastro e edição (PessoaFormScreen)
 
 Crie o arquivo `src/screens/PessoaFormScreen.js`.
 
@@ -1144,7 +993,7 @@ O botão **Salvar** exibe um `ActivityIndicator` enquanto a requisição está e
 
 ---
 
-## Passo 12: Criando a tela de detalhes com ícones de editar e excluir (PessoaDetailScreen)
+## Passo 11: Criando a tela de detalhes com ícones de editar e excluir (PessoaDetailScreen)
 
 Crie o arquivo `src/screens/PessoaDetailScreen.js`.
 
@@ -1464,7 +1313,7 @@ O estado `excluindo` desabilita o botão de excluir e exibe um `ActivityIndicato
 
 ---
 
-## Passo 13: Montando a navegação do aplicativo (App.js)
+## Passo 12: Montando a navegação do aplicativo (App.js)
 
 Substitua o conteúdo do arquivo `App.js` na raiz do projeto:
 
@@ -1547,7 +1396,7 @@ export default function App() {
 
 ---
 
-## Passo 14: Resumo do fluxo de comunicação com a API
+## Passo 13: Resumo do fluxo de comunicação com a API
 
 A tabela abaixo resume como cada tela se comunica com o backend:
 
@@ -1564,7 +1413,7 @@ Essas chamadas seguem exatamente o padrão de rotas que aparece no arquivo `pess
 
 ---
 
-## Passo 15: Executando o projeto no Codespaces
+## Passo 14: Executando o projeto no Codespaces
 
 Com todos os arquivos criados, execute o projeto:
 
@@ -1586,11 +1435,11 @@ O terminal exibirá um QR Code. Use o aplicativo **Expo Go** no seu celular para
 
 ---
 
-## Passo 16: Checklist final do que o aplicativo precisa entregar
+## Passo 15: Checklist final do que o aplicativo precisa entregar
 
 Antes de considerar o projeto pronto, confirme se todos os itens abaixo estão funcionando:
 
-**Backend Spring Boot:**
+**Backend Spring Boot** *(detalhado no tutorial `aulaSpring.md`)*:
 - [ ] Endpoint `GET /api/pessoas` retorna lista de pessoas em JSON
 - [ ] Endpoint `GET /api/pessoas/{id}` retorna uma pessoa por ID
 - [ ] Endpoint `POST /api/pessoas` cadastra uma nova pessoa
