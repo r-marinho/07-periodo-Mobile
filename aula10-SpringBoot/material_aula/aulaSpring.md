@@ -133,6 +133,7 @@ spring.jpa.show-sql=true
 spring.thymeleaf.prefix=classpath:/templates/
 spring.thymeleaf.suffix=.html
 spring.thymeleaf.cache=false
+server.forward-headers-strategy=framework
 ```
 
 spring.application.name: Nome da aplicação usado no contexto Spring (por exemplo, em logs ou no Actuator).
@@ -156,6 +157,8 @@ prefix: pasta onde ficam os templates (`src/main/resources/templates/`).
 suffix: extensão padrão dos arquivos (`.html`).
 
 cache: desativado para que mudanças nos templates reflitam imediatamente, sem reiniciar a aplicação.
+
+server.forward-headers-strategy: Necessário quando a aplicação roda atrás de um proxy reverso, como o GitHub Codespaces. Com o valor `framework`, o Spring Boot lê os cabeçalhos `X-Forwarded-Host` e `X-Forwarded-Proto` enviados pelo proxy e os usa para gerar URLs corretas nos redirecionamentos. Sem essa configuração, o Spring Boot gera redirects apontando para `http://localhost:8080`, que não é acessível fora do Codespace.
 
 #### Configuração de CORS (CorsConfig)
 
