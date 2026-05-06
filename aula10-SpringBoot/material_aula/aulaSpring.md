@@ -203,6 +203,38 @@ public class CorsConfig {
 
 Após criar o arquivo, reinicie o Spring Boot para que a configuração entre em vigor.
 
+#### Redirecionamento da Raiz (HomeController)
+
+Por padrão, o Spring Boot não possui nenhuma rota mapeada para `/` (raiz). Ao acessar apenas o endereço base da aplicação (ex.: `https://SEU-CODESPACE-8080.app.github.dev`), o framework exibe a página de erro **Whitelabel Error Page** com status `404`, porque não encontrou nenhum recurso estático ou controller responsável por aquela URL.
+
+A solução é criar um controller dedicado que captura a requisição da raiz e redireciona o usuário para a página inicial da interface web.
+
+`@Controller`: declara um controlador MVC que retorna nomes de views ou redirecionamentos.
+
+`@GetMapping("/")`: mapeia exclusivamente a rota raiz da aplicação.
+
+`"redirect:/pessoas/listar"`: instrui o Spring MVC a enviar uma resposta HTTP `302 Found` ao navegador, que então faz uma nova requisição para `/pessoas/listar`.
+
+Crie a classe `HomeController` no pacote `com.example.projeto.controller`:
+
+```java
+package com.example.projeto.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class HomeController {
+
+    @GetMapping("/")
+    public String home() {
+        return "redirect:/pessoas/listar";
+    }
+}
+```
+
+Com essa classe criada, ao acessar o endereço raiz da aplicação o usuário é redirecionado automaticamente para a listagem de pessoas, sem precisar digitar o caminho completo.
+
 ### Passo 4: Desenvolvendo
 
 #### Camada de Modelo (Model)
