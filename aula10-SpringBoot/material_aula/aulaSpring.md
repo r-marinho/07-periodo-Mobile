@@ -157,6 +157,52 @@ suffix: extensão padrão dos arquivos (`.html`).
 
 cache: desativado para que mudanças nos templates reflitam imediatamente, sem reiniciar a aplicação.
 
+#### Configuração de CORS (CorsConfig)
+
+CORS (Cross-Origin Resource Sharing) é um mecanismo de segurança dos navegadores que bloqueia requisições feitas por um cliente com origem diferente do servidor. Sem essa configuração, o app mobile (Expo Go, navegador web) não consegue se comunicar com a API REST, mesmo que a URL esteja correta e a porta esteja pública.
+
+`@Configuration`: indica ao Spring que essa classe contém definições de beans gerenciados pelo contêiner.
+
+`WebMvcConfigurer`: interface do Spring MVC que permite personalizar o comportamento padrão do framework, incluindo as regras de CORS.
+
+`addMapping("/api/**")`: aplica a política de CORS a todas as rotas que começam com `/api/`.
+
+`allowedOrigins("*")`: aceita requisições de qualquer origem, necessário para clientes externos como o app mobile.
+
+`allowedMethods(...)`: lista os métodos HTTP permitidos. O `OPTIONS` é obrigatório porque o `axios` envia uma requisição de preflight antes de `POST` e `PUT`.
+
+`allowedHeaders("*")`: aceita qualquer cabeçalho enviado pelo cliente.
+
+Crie a classe `CorsConfig` no pacote `com.example.projeto.config`:
+
+```java
+package com.example.projeto.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+public class CorsConfig {
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/api/**")
+                    .allowedOrigins("*")
+                    .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                    .allowedHeaders("*");
+            }
+        };
+    }
+}
+```
+
+Após criar o arquivo, reinicie o Spring Boot para que a configuração entre em vigor.
+
 ### Passo 4: Desenvolvendo
 
 #### Camada de Modelo (Model)
