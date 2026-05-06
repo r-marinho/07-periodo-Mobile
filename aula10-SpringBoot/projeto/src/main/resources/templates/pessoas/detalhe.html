@@ -4,16 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Detalhes da Pessoa</title>
-     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- link para seu CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 
 <body>
-
+    <!-- navbar -->
     <div th:replace="fragments/navbar :: navbar"></div>
-
     <main class="main-content">
-        <h1>Detalhes</h1>
-        
+        <h1>Detalhes da Pessoa</h1>
+
         <table>
             <thead>
                 <tr>
@@ -36,11 +36,10 @@
                 </tr>
             </tbody>
         </table>
-
     </main>
-
+    <!-- footer opcional -->
     <footer>
-        <p>2025 Meu App</p>
+        <p>(c) 2025 Meu App</p>
     </footer>
 </body>
 

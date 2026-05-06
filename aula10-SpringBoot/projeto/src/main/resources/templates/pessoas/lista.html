@@ -3,7 +3,6 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Pessoas</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
@@ -11,6 +10,7 @@
 <body>
     <div th:replace="fragments/navbar :: navbar"></div>
 
+    <!-- conteúdo principal -->
     <main class="main-content">
         <h1>Lista de Pessoas</h1>
         <table>
@@ -23,7 +23,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="pessoa: ${lista}">
+                <tr th:each="pessoa : ${lista}">
                     <td th:text="${pessoa.id}"></td>
                     <td th:text="${pessoa.nome}"></td>
                     <td th:text="${pessoa.idade}"></td>
@@ -33,11 +33,11 @@
                 </tr>
             </tbody>
         </table>
-
     </main>
 
+    <!-- footer opcional -->
     <footer>
-        <p>2025 Meu App</p>
+        <p>(c) 2025 Meu App</p>
     </footer>
 </body>
 

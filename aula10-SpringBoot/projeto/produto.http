@@ -1,5 +1,5 @@
-# Definição de variáveis (ambiente “local” do REST Client)
-@base_url = https://verbose-dollop-x597q5v7w4vq3v6g9-8080.app.github.dev
+# Definição de variáveis (ambiente "local" do REST Client)
+@base_url = INSERIR A URL DA SUA PORTA 8080 (PÚBLICA)
 
 ### Inserir novo produto
 POST {{ base_url }}/api/produtos
@@ -15,7 +15,7 @@ Content-Type: application/json
 GET {{ base_url }}/api/produtos
 Accept: application/json
 
-### Buscar produtos por ID
+### Buscar produto por ID
 GET {{ base_url }}/api/produtos/1
 Accept: application/json
 
@@ -24,11 +24,11 @@ PUT {{ base_url }}/api/produtos/1
 Content-Type: application/json
 
 {
-  "nome": "Notebook",
-  "quantidade": 09,
-  "valor" : 5899.90 
+  "nome": "Notebook Pro",
+  "quantidade": 5,
+  "valor": 4299.99
 }
 
-### Remover pessoa (DELETE)
+### Remover produto (DELETE)
 DELETE {{ base_url }}/api/produtos/1
 Accept: */*

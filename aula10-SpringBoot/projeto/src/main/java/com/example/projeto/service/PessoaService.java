@@ -27,6 +27,15 @@ public class PessoaService{
         return pessoaRepository.save(pessoa);
     }
 
+    public Optional<Pessoa> atualizarPessoa(Long id, Pessoa pessoaAtualizada){
+        return pessoaRepository.findById(id)
+            .map(pessoaExistente -> {
+                pessoaExistente.setNome(pessoaAtualizada.getNome());
+                pessoaExistente.setIdade(pessoaAtualizada.getIdade());
+                return pessoaRepository.save(pessoaExistente);
+            });
+    }
+
     public void deletarPessoa(Long id){
         pessoaRepository.deleteById(id);
     }
